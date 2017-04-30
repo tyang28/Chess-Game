@@ -33,14 +33,19 @@ enum status {
 
 // Possible pieces
 enum PieceEnum {
-    PAWN_ENUM = 0,
-    ROOK_ENUM,
-    KNIGHT_ENUM,
-    BISHOP_ENUM,
-    QUEEN_ENUM,
-    KING_ENUM
+    SPACE_ENUM = 0,
+    PAWN_ENUM = 1,
+    ROOK_ENUM = 2,
+    KNIGHT_ENUM = 3,
+    BISHOP_ENUM = 4,
+    QUEEN_ENUM = 5,
+    KING_ENUM = 6 
 };
-
+class Space : public Piece {
+protected:
+  friend PieceFactory<Space>;
+  Space(Player owner, int id) : Piece(owner, id) {}
+};
 class Pawn : public Piece {
 protected:
     friend PieceFactory<Pawn>;
@@ -108,6 +113,7 @@ class ChessGame : public Board {
 public:
     ChessGame() : Board(8, 8) {
         // Add all factories needed to create Piece subclasses
+        addFactory(new PieceFactory<Space>(SPACE_ENUM));
         addFactory(new PieceFactory<Pawn>(PAWN_ENUM));
         addFactory(new PieceFactory<Rook>(ROOK_ENUM));
         addFactory(new PieceFactory<Knight>(KNIGHT_ENUM));
@@ -115,7 +121,8 @@ public:
         addFactory(new PieceFactory<Queen>(QUEEN_ENUM));
         addFactory(new PieceFactory<King>(KING_ENUM));
     }
-
+    // Create Board and fill with spaces
+    virtual void createBoard();
     // Setup the chess board with its initial pieces
     virtual void setupBoard();
 
@@ -126,6 +133,10 @@ public:
     // The method returns an integer with the status
     // >= 0 is SUCCESS, < 0 is failure
     virtual int makeMove(Position start, Position end) override;
-};
+    //run the game
+    virtual void run();
+    //print the board
+    virtual void printBoard();
+}; 
 
 #endif

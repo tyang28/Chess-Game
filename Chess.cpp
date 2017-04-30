@@ -16,7 +16,14 @@ int ChessGame::makeMove(Position start, Position end) {
     int retCode = Board::makeMove(start, end);
     return retCode;
 }
-
+//Create the board and fill with empty spaces
+void ChessGame::createBoard() {
+    for (size_t i = 0; i < 8; ++i) {
+      for(size_t j = 2; j < 6; ++j){
+        initPiece(SPACE_ENUM, WHITE, Position(i, j));  
+      }
+    }  
+}  
 // Setup the chess board with its initial pieces
 void ChessGame::setupBoard() {
     std::vector<int> pieces {
@@ -30,7 +37,21 @@ void ChessGame::setupBoard() {
         initPiece(PAWN_ENUM, BLACK, Position(i, 6));
     }
 }
-
+void ChessGame::run() {
+    createBoard();
+    setupBoard();
+    printBoard();
+}
+void ChessGame::printBoard(){
+    for (size_t i = 0; i < 8; ++i) {
+      for(size_t j = 0; j < 8; ++j){
+	Piece* piece = getPiece(Position(j,i));
+	int id = piece->id();
+	std::cout << id;
+      }
+      std::cout<<std::endl;
+    }
+}
 int main() {
     ChessGame chess;
     chess.run();
