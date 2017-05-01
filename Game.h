@@ -6,7 +6,8 @@
 // The list of players
 enum Player {
     WHITE = 0,
-    BLACK = 1
+    BLACK = 1,
+    SPACE = 2
 };
 
 
@@ -73,6 +74,7 @@ public:
     virtual int makeMove(Position start, Position end) {
         // This method may handle the parts of moving pieces that
         // generalize over different board games
+        
         return 0;
     }
 

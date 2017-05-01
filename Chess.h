@@ -90,12 +90,13 @@ public:
             }
           }
 	}
-	/*
+        /*
 	else if((piece1->owner() == 1) && (piece2->owner() == 2)){
           if((((start.y - end.y) == 1)||((end.y - start.y) == 1))&&((start.x - end.x) == 0)){
      
         }
         */
+     
 	
 	return -1;
     }
