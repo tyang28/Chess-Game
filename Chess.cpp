@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <string>
 #include "Game.h"
 #include "Chess.h"
 #include "Prompts.h"
@@ -20,7 +21,7 @@ int ChessGame::makeMove(Position start, Position end) {
 void ChessGame::createBoard() {
     for (size_t i = 0; i < 8; ++i) {
       for(size_t j = 2; j < 6; ++j){
-        initPiece(SPACE_ENUM, WHITE, Position(i, j));  
+        initPiece(SPACE_ENUM, SPACE, Position(i, j));  
       }
     }  
 }  
@@ -38,8 +39,60 @@ void ChessGame::setupBoard() {
     }
 }
 void ChessGame::run() {
-    createBoard();
-    setupBoard();
+    
+    Prompts* prompt = new Prompts();
+    int input;
+    prompt->menu();
+    
+    while(1){
+	scanf(" %d", &input);
+        if (input == 2) {
+	    prompt->loadGame();
+	    break;
+	    //Add loading a game
+        } else if( input != 1) {
+	    prompt->menu();
+        } else {
+	   break;
+	}
+    }
+    if (input == 1) {
+	createBoard();
+        setupBoard();
+	int whiteTurnNum = 0;
+	int blackTurnNum = 0;
+	m_turn = 1;
+
+	std::string move;
+	while(1) {
+	   if(playerTurn() == 0) {
+		puts("test");
+	       prompt->playerPrompt(playerTurn(), m_turn);
+		std::getline (std::cin, move);
+		std::getline (std::cin, move);
+		puts("test");
+		int startRow = move.at(0) - 97;
+		int endRow = move.at(3) - 97;
+
+		std::cout << startRow << "  " << endRow << std::endl;
+		Position start = Position(startRow, (move.at(1) - 1 - '97'));
+		Position end = Position(endRow, (move.at(4) - 1 - '97'));
+
+		Board board = new Board(8,8);
+		if(getPiece(start)->validMove(start, end, board ) {
+			
+		} else if (makeMove(start, end)
+		
+	   }
+	 
+
+	}
+	
+	
+
+    }
+    
+    
     printBoard();
 }
 void ChessGame::printBoard(){
