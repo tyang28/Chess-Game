@@ -55,13 +55,16 @@ public:
     // It may also call the generic Piece::validMove for common logic
     int validMove(Position start, Position end,
         const Board& board) const override {
+        puts("here");
         Prompts* prompt = new Prompts();
-        Piece* piece1 = board.getPiece(start);
-	Piece* piece2 = board.getPiece(end);
-        if(piece1->owner() == piece2->owner()){
+        Piece* startpiece = board.getPiece(start);
+	Piece* endpiece = board.getPiece(end);
+	puts("hwew.x");
+        if(startpiece->owner() == endpiece->owner()){
           prompt->blocked();
         }
-	if((piece1->owner() == 0) && (piece2->owner() == 1)){
+	puts("here1.5");
+	if((startpiece->owner() == 0) && (endpiece->owner() == 1)){
 	  if((end.x == start.x + 1) && (end.y == start.y + 1)){
 	    return SUCCESS; 
 	  }
@@ -72,7 +75,8 @@ public:
 	    return -1;
 	  }
 	}
-	if((piece1->owner() == 1) && (piece2->owner() == 0)){
+	puts("here2");
+	if((startpiece->owner() == 1) && (endpiece->owner() == 0)){
 	  if((end.x == start.x + 1) && (end.y == start.y - 1)){
             return SUCCESS;
           }
@@ -83,20 +87,36 @@ public:
             return -1;
           }
 	}
-	if((piece1->owner() == 0) && (piece2->owner() == 2)){
+	puts("here3");
+	if((startpiece->owner() == 0) && (endpiece->owner() == 2)){
+	  //WHITE SINGLE SPACE
+	  if(startpiece->owner() == 0){
+            if(((start.x - end.x) == 0)&& ((end.y - start.y) == 1)){
+              return SUCCESS;
+            }
+          }
+	  //WHITE DOUBLE SPACE
 	  if(start.y == 1){
-            if(((start.y - end.y) == -2)&&((start.x - end.x) == 0)){
+            if(((end.y - start.y) == 2)&&((start.x - end.x) == 0)){
               return SUCCESS;
             }
           }
 	}
-        /*
-	else if((piece1->owner() == 1) && (piece2->owner() == 2)){
-          if((((start.y - end.y) == 1)||((end.y - start.y) == 1))&&((start.x - end.x) == 0)){
-     
+	//BLACK DOUBLE SPACE
+	if((startpiece->owner() == 1) && (endpiece->owner() == 2)){
+	  //BLACK SINGLE SPACE                                                                                                                                                                           
+          if(startpiece->owner() == 1){
+            if(((start.x - end.x) == 0)&& ((start.y - end.y) == 1)){
+              return SUCCESS;
+            }
+          }
+	  //BLACK DOUBLE SPACE
+	  if(start.y == 6){
+            if(((start.y - end.y) == 2)&&((start.x - end.x) == 0)){
+	      return SUCCESS;
+            }
+	  }
         }
-        */
-     
 	
 	return -1;
     }
@@ -111,6 +131,7 @@ public:
     // It may also call the generic Piece::validMove for common logic
     int validMove(Position start, Position end,
         const Board& board) const override {
+      /*
         if((start.x == end.x)&&(end.y - start.y) < 8){
 	  Piece* piece = board.getPiece(Position(end.y,end.x));
           if((piece->id()) == 0){
@@ -127,6 +148,8 @@ public:
         Piece* piece2 = board.getPiece(end);
         
         return -1;
+      */
+      return SUCCESS;
     }
 };
 class Knight : public Piece {

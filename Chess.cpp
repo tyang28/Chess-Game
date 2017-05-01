@@ -15,6 +15,21 @@ int ChessGame::makeMove(Position start, Position end) {
     // We call Board's makeMove to handle any general move logic
     // Feel free to use this or change it as you see fit
     int retCode = Board::makeMove(start, end);
+    const ChessGame board = *this;
+    Piece* startpiece = getPiece(start);
+    std::cout << start.x << start.y << " " << end.x << end.y << std::endl;
+    if((startpiece->validMove(start, end, board)) >= 0){
+ 
+      m_pieces[index(end)] = startpiece;
+      m_pieces[index(start)] = newPiece(0, SPACE);
+      puts("did run");
+      retCode = 0;
+     }
+    else{
+      Prompts* prompt = new Prompts();
+      prompt->illegalMove();
+      retCode = -1;
+      }
     return retCode;
 }
 //Create the board and fill with empty spaces
@@ -67,25 +82,25 @@ void ChessGame::run() {
 	while(1) {
 	   if(playerTurn() == 0) {
 		puts("test");
-	       prompt->playerPrompt(playerTurn(), m_turn);
+	        prompt->playerPrompt(playerTurn(), m_turn);
 		std::getline (std::cin, move);
 		std::getline (std::cin, move);
 		puts("test");
 		int startRow = move.at(0) - 97;
 		int endRow = move.at(3) - 97;
-
+		int startColumn = move.at(1) - '1';
+	        int endColumn = move.at(4) - '1';
 		std::cout << startRow << "  " << endRow << std::endl;
-		Position start = Position(startRow, (move.at(1) - 1 - '97'));
-		Position end = Position(endRow, (move.at(4) - 1 - '97'));
+		Position start = Position(startRow, startColumn);
+		Position end = Position(endRow, endColumn);
 
-	
-		if(getPiece(start)->validMove(start, end)) {
-			
-		} else if (makeMove(start, end)) {
-
+		std::cout << startColumn << "  " << endColumn << std::endl;
+		if( makeMove(start, end) >= 0) {
+		  m_turn++;
 		}
 		
 	   }
+	   break;
 	 
 
 	}
@@ -96,9 +111,10 @@ void ChessGame::run() {
     
     
     printBoard();
+    puts("done printing");
 }
 void ChessGame::printBoard(){
-    for (size_t i = 0; i < 8; ++i) {
+    for (int i = 7; i > -1; --i) {
       for(size_t j = 0; j < 8; ++j){
 	Piece* piece = getPiece(Position(j,i));
 	int id = piece->id();
