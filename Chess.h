@@ -83,22 +83,20 @@ public:
             return -1;
           }
 	}
-	/*
-	if((start.y == 1)|| (start.y == 6)){
-          if((((start.y - end.y) == 2)||((end.y - start.y) == 2))&&((start.x - end.x) == 0)){
-            Piece* piece = board.getPiece(Position(end.y,end.x));
-            if((piece->id()) == 0){
+	if((piece1->owner() == 0) && (piece2->owner() == 2)){
+	  if(start.y == 1){
+            if(((start.y - end.y) == -2)&&((start.x - end.x) == 0)){
               return SUCCESS;
             }
           }
+	}
+	/*
+	else if((piece1->owner() == 1) && (piece2->owner() == 2)){
+          if((((start.y - end.y) == 1)||((end.y - start.y) == 1))&&((start.x - end.x) == 0)){
+     
         }
-        else if((((start.y - end.y) == 1)||((end.y - start.y) == 1))&&((start.x - end.x) == 0)){
-            Piece* piece = board.getPiece(Position(end.y,end.x));
-            if((piece->id()) == 0){
-              return SUCCESS;
-            }
-        }
-	*/
+        */
+	
 	return -1;
     }
     
