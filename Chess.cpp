@@ -59,8 +59,8 @@ void ChessGame::run() {
     if (input == 1) {
 	createBoard();
         setupBoard();
-	int whiteTurnNum = 0;
-	int blackTurnNum = 0;
+	//int whiteTurnNum = 0;
+	//int blackTurnNum = 0;
 	m_turn = 1;
 
 	std::string move;
@@ -78,10 +78,12 @@ void ChessGame::run() {
 		Position start = Position(startRow, (move.at(1) - 1 - '97'));
 		Position end = Position(endRow, (move.at(4) - 1 - '97'));
 
-		Board board = new Board(8,8);
-		if(getPiece(start)->validMove(start, end, board ) {
+	
+		if(getPiece(start)->validMove(start, end)) {
 			
-		} else if (makeMove(start, end)
+		} else if (makeMove(start, end)) {
+
+		}
 		
 	   }
 	 
