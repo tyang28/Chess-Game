@@ -2,7 +2,7 @@
 #define CHESS_H
 
 #include "Game.h"
-
+#include "Prompts.h"
 // Game status codes
 // -----------------
 // These enumerations are optional. You can choose to use them,
@@ -55,8 +55,53 @@ public:
     // It may also call the generic Piece::validMove for common logic
     int validMove(Position start, Position end,
         const Board& board) const override {
-        return SUCCESS;
+        Prompts* prompt = new Prompts();
+        Piece* piece1 = board.getPiece(start);
+	Piece* piece2 = board.getPiece(end);
+        if(piece1->owner() == piece2->owner()){
+          prompt->blocked();
+        }
+	if((piece1->owner() == 0) && (piece2->owner() == 1)){
+	  if((end.x == start.x + 1) && (end.y == start.y + 1)){
+	    return SUCCESS; 
+	  }
+	  else if((end.x == start.x - 1) && (end.y == start.y + 1)){
+	    return SUCCESS;
+	  }
+	  else{
+	    return -1;
+	  }
+	}
+	if((piece1->owner() == 1) && (piece2->owner() == 0)){
+	  if((end.x == start.x + 1) && (end.y == start.y - 1)){
+            return SUCCESS;
+          }
+          else if((end.x == start.x - 1) && (end.y == start.y - 1)){
+            return SUCCESS;
+          }
+          else{
+            return -1;
+          }
+	}
+	/*
+	if((start.y == 1)|| (start.y == 6)){
+          if((((start.y - end.y) == 2)||((end.y - start.y) == 2))&&((start.x - end.x) == 0)){
+            Piece* piece = board.getPiece(Position(end.y,end.x));
+            if((piece->id()) == 0){
+              return SUCCESS;
+            }
+          }
+        }
+        else if((((start.y - end.y) == 1)||((end.y - start.y) == 1))&&((start.x - end.x) == 0)){
+            Piece* piece = board.getPiece(Position(end.y,end.x));
+            if((piece->id()) == 0){
+              return SUCCESS;
+            }
+        }
+	*/
+	return -1;
     }
+    
 };
 class Rook : public Piece {
 protected:
@@ -66,7 +111,24 @@ public:
     // This method will have piece-specific logic for checking valid moves
     // It may also call the generic Piece::validMove for common logic
     int validMove(Position start, Position end,
-        const Board& board) const override { return SUCCESS; }
+        const Board& board) const override {
+        if((start.x == end.x)&&(end.y - start.y) < 8){
+	  Piece* piece = board.getPiece(Position(end.y,end.x));
+          if((piece->id()) == 0){
+            return SUCCESS;
+          }
+        }
+	else if((start.y == end.y)&&(end.x - start.x) < 8){
+	  Piece* piece = board.getPiece(Position(end.y,end.x));
+          if((piece->id()) == 0){
+            return SUCCESS;
+          }
+	}
+	Piece* piece1 = board.getPiece(start);
+        Piece* piece2 = board.getPiece(end);
+        
+        return -1;
+    }
 };
 class Knight : public Piece {
 protected:
