@@ -62,6 +62,7 @@ public:
 	puts("hwew.x");
         if(startpiece->owner() == endpiece->owner()){
           prompt->blocked();
+	  return -1;
         }
 	puts("here1.5");
 	if((startpiece->owner() == 0) && (endpiece->owner() == 1)){
@@ -131,25 +132,30 @@ public:
     // It may also call the generic Piece::validMove for common logic
     int validMove(Position start, Position end,
         const Board& board) const override {
-      /*
-        if((start.x == end.x)&&(end.y - start.y) < 8){
-	  Piece* piece = board.getPiece(Position(end.y,end.x));
-          if((piece->id()) == 0){
-            return SUCCESS;
-          }
+        Prompts* prompt = new Prompts();
+        Piece* startpiece = board.getPiece(start);                                                                                                                                                       
+        Piece* endpiece = board.getPiece(end);
+	int i = start.y + 1;
+        if(startpiece->owner() == endpiece->owner()){
+          prompt->blocked();
+	  return -1;
         }
-	else if((start.y == end.y)&&(end.x - start.x) < 8){
-	  Piece* piece = board.getPiece(Position(end.y,end.x));
-          if((piece->id()) == 0){
+	if(endpiece->owner() == 2){
+          if((start.x == end.x)&&(end.y - start.y) < 8){
             return SUCCESS;
           }
-	}
-	Piece* piece1 = board.getPiece(start);
-        Piece* piece2 = board.getPiece(end);
-        
-        return -1;
-      */
-      return SUCCESS;
+	  else if((start.y == end.y)&&(end.x - start.x) < 8){
+            return SUCCESS;
+	  }
+        }
+        if(startpiece->owner() != endpiece->owner()){
+          if((start.x == end.x)&&(end.y - start.y) < 8){
+	    for(i < end.y; ++i){
+	      Piece* betweenpiece = board.getPiece(i);
+	    }
+	  }
+        }
+        return SUCCESS;
     }
 };
 class Knight : public Piece {
