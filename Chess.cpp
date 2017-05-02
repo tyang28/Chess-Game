@@ -112,8 +112,8 @@ int main() {
 	}
     }
     if (input == 1) {
-	createBoard();
-        setupBoard();
+	chess.createBoard();
+        chess.setupBoard();
 	chess.run();
     }
 }
