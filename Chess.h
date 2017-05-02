@@ -147,7 +147,7 @@ public:
           if((start.x == end.x)&&(end.y - start.y) < 8){
 	    if(end.y > start.y){
 	      for(;a < end.y; ++a){
-	        Piece* betweenpiece = board.getPiece(a);
+	        Piece* betweenpiece = board.getPiece(Position(start.x,a));
 	        if(betweenpiece->owner() != 2){
 		  prompt->blocked();
 		  return -1;
@@ -157,7 +157,7 @@ public:
 	    }
 	    if(start.y > end.y){
 	      for(;b > end.y; --b){
-		Piece* betweenpiece = board.getPiece(b);
+		Piece* betweenpiece = board.getPiece(Position(start.x,b));
 		if(betweenpiece->owner() != 2){
 		  prompt->blocked();
 		  return -1;
@@ -169,7 +169,7 @@ public:
 	  if((start.y == end.y)&&(end.x - start.x) < 8){
 	    if(end.x > start.x){
 	      for(;c < end.x; ++c){
-		Piece* betweenpiece = board.getPiece(c);
+		Piece* betweenpiece = board.getPiece(Position(c, start.y));
 		if(betweenpiece->owner() != 2){
 		  prompt->blocked();
 		  return -1;
@@ -179,7 +179,7 @@ public:
 	    }
 	    if(start.x > start.y){
 	      for(;d > end.x; --d){
-		Piece* betweenpiece = board.getPiece(d);
+		Piece* betweenpiece = board.getPiece(Position(d, start.y));
 		if(betweenpiece->owner() != 2){
 		  prompt->blocked();
 		  return -1;
