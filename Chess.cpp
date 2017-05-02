@@ -56,6 +56,46 @@ void ChessGame::setupBoard() {
 void ChessGame::run() {
     
     Prompts* prompt = new Prompts();
+    std::string move;
+
+    while(1) {
+	if(playerTurn() == 0) {
+	    prompt->playerPrompt(playerTurn(), m_turn);
+            std::getline (std::cin, move);
+	    std::getline (std::cin, move);
+ 	    int startRow = move.at(0) - 97;
+	    int endRow = move.at(3) - 97;
+	    int startColumn = move.at(1) - '1';
+	    int endColumn = move.at(4) - '1';
+	    std::cout << startRow << "  " << endRow << std::endl;
+	    Position start = Position(startRow, startColumn);
+	    Position end = Position(endRow, endColumn);
+
+	    std::cout << startColumn << "  " << endColumn << std::endl;
+	    if( makeMove(start, end) >= 0) {
+		m_turn++;
+ 	    }
+		
+	}
+	   break;
+     }
+    
+    
+    printBoard();
+}
+void ChessGame::printBoard(){
+    for (int i = 7; i > -1; --i) {
+      for(size_t j = 0; j < 8; ++j){
+	Piece* piece = getPiece(Position(j,i));
+	int id = piece->id();
+	std::cout << id;
+      }
+      std::cout<<std::endl;
+    }
+}
+int main() {
+    ChessGame chess;
+    Prompts* prompt = new Prompts();
     int input;
     prompt->menu();
     
@@ -74,56 +114,6 @@ void ChessGame::run() {
     if (input == 1) {
 	createBoard();
         setupBoard();
-	//int whiteTurnNum = 0;
-	//int blackTurnNum = 0;
-	m_turn = 1;
-
-	std::string move;
-	while(1) {
-	   if(playerTurn() == 0) {
-		puts("test");
-	        prompt->playerPrompt(playerTurn(), m_turn);
-		std::getline (std::cin, move);
-		std::getline (std::cin, move);
-		puts("test");
-		int startRow = move.at(0) - 97;
-		int endRow = move.at(3) - 97;
-		int startColumn = move.at(1) - '1';
-	        int endColumn = move.at(4) - '1';
-		std::cout << startRow << "  " << endRow << std::endl;
-		Position start = Position(startRow, startColumn);
-		Position end = Position(endRow, endColumn);
-
-		std::cout << startColumn << "  " << endColumn << std::endl;
-		if( makeMove(start, end) >= 0) {
-		  m_turn++;
-		}
-		
-	   }
-	   break;
-	 
-
-	}
-	
-	
-
+	chess.run();
     }
-    
-    
-    printBoard();
-    puts("done printing");
-}
-void ChessGame::printBoard(){
-    for (int i = 7; i > -1; --i) {
-      for(size_t j = 0; j < 8; ++j){
-	Piece* piece = getPiece(Position(j,i));
-	int id = piece->id();
-	std::cout << id;
-      }
-      std::cout<<std::endl;
-    }
-}
-int main() {
-    ChessGame chess;
-    chess.run();
 }
