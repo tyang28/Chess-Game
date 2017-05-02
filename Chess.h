@@ -135,27 +135,61 @@ public:
         Prompts* prompt = new Prompts();
         Piece* startpiece = board.getPiece(start);                                                                                                                                                       
         Piece* endpiece = board.getPiece(end);
-	int i = start.y + 1;
+	unsigned int a = start.y + 1;
+	unsigned int b = start.y - 1;
+	unsigned int c = start.x + 1;
+	unsigned int d = start.x - 1;
         if(startpiece->owner() == endpiece->owner()){
           prompt->blocked();
 	  return -1;
         }
-	if(endpiece->owner() == 2){
+        else if(startpiece->owner() != endpiece->owner()){
           if((start.x == end.x)&&(end.y - start.y) < 8){
-            return SUCCESS;
-          }
-	  else if((start.y == end.y)&&(end.x - start.x) < 8){
-            return SUCCESS;
-	  }
-        }
-        if(startpiece->owner() != endpiece->owner()){
-          if((start.x == end.x)&&(end.y - start.y) < 8){
-	    for(i < end.y; ++i){
-	      Piece* betweenpiece = board.getPiece(i);
+	    if(end.y > start.y){
+	      for(;a < end.y; ++a){
+	        Piece* betweenpiece = board.getPiece(a);
+	        if(betweenpiece->owner() != 2){
+		  prompt->blocked();
+		  return -1;
+	        }
+	      }
+	      return SUCCESS;//check
+	    }
+	    if(start.y > end.y){
+	      for(;b > end.y; --b){
+		Piece* betweenpiece = board.getPiece(b);
+		if(betweenpiece->owner() != 2){
+		  prompt->blocked();
+		  return -1;
+		}
+	      }
+	      return SUCCESS; //Check
+	    }
+     	  }
+	  if((start.y == end.y)&&(end.x - start.x) < 8){
+	    if(end.x > start.x){
+	      for(;c < end.x; ++c){
+		Piece* betweenpiece = board.getPiece(c);
+		if(betweenpiece->owner() != 2){
+		  prompt->blocked();
+		  return -1;
+		}
+	      }
+	      return SUCCESS;
+	    }
+	    if(start.x > start.y){
+	      for(;d > end.x; --d){
+		Piece* betweenpiece = board.getPiece(d);
+		if(betweenpiece->owner() != 2){
+		  prompt->blocked();
+		  return -1;
+		}
+	      }
+	      return SUCCESS;
 	    }
 	  }
         }
-        return SUCCESS;
+        return -1;
     }
 };
 class Knight : public Piece {
@@ -166,7 +200,46 @@ public:
     // This method will have piece-specific logic for checking valid moves
     // It may also call the generic Piece::validMove for common logic
     int validMove(Position start, Position end,
-        const Board& board) const override { return SUCCESS; }
+        const Board& board) const override {
+        Prompts* prompt = new Prompts();
+        Piece* startpiece = board.getPiece(start);
+        Piece* endpiece = board.getPiece(end);
+        if(startpiece->owner() == endpiece->owner()){
+          prompt->blocked();
+          return -1;
+        }
+	else if(startpiece->owner() != endpiece->owner()){
+	  if(end.y > start.y){
+	    if((end.y == (start.y + 2))&&(end.x == (start.x + 1))){
+	      return SUCCESS;
+	    }
+	    else if((end.y == (start.y + 1))&&(end.x == (start.x + 2))){
+	      return SUCCESS;
+	    }
+	    else if((end.y == (start.y + 2))&&(end.x == (start.x - 1))){
+	      return SUCCESS;
+	    }
+	    else if((end.y == (start.y + 1))&&(end.x == (start.x - 2))){
+              return SUCCESS;
+            }
+	  }
+	  if(end.y < start.y){
+	    if((end.y == (start.y - 2))&&(end.x == (start.x + 1))){
+	      return SUCCESS;
+	    }
+	    else if((end.y == (start.y - 1))&&(end.x == (start.x + 2))){
+	      return SUCCESS;
+	    }
+	    else if((end.y == (start.y - 2))&&(end.x == (start.x - 1))){
+              return SUCCESS;
+            }
+	    else if((end.y == (start.y - 1))&&(end.x == (start.x - 2))){
+              return SUCCESS;
+            }
+	  }
+        }
+        return -1;
+    }
 };
 class Bishop : public Piece {
 protected:
@@ -176,7 +249,25 @@ public:
     // This method will have piece-specific logic for checking valid moves
     // It may also call the generic Piece::validMove for common logic
     int validMove(Position start, Position end,
-        const Board& board) const override { return SUCCESS; }
+        const Board& board) const override {
+        Prompts* prompt = new Prompts();
+        Piece* startpiece = board.getPiece(start);
+        Piece* endpiece = board.getPiece(end);
+        if(startpiece->owner() == endpiece->owner()){
+          prompt->blocked();
+          return -1;
+        }
+	else if(startpiece->owner() != endpiece->owner()){
+	  for(unsigned int i = start.x + 1; i < end.x;i++){
+	    Piece* betweenpiece = board.getPiece(Position(i, i));
+	    if(betweenpiece->owner() != 2){
+	      return -1;
+	    }
+	  }
+	}
+
+        return SUCCESS;
+    }
 };
 class Queen : public Piece {
 protected:
@@ -186,7 +277,16 @@ public:
     // This method will have piece-specific logic for checking valid moves
     // It may also call the generic Piece::validMove for common logic
     int validMove(Position start, Position end,
-        const Board& board) const override { return SUCCESS; }
+        const Board& board) const override {
+        Prompts* prompt = new Prompts();
+        Piece* startpiece = board.getPiece(start);
+        Piece* endpiece = board.getPiece(end);
+        if(startpiece->owner() == endpiece->owner()){
+          prompt->blocked();
+          return -1;
+        }                          
+        return -1;
+    }
 };
 class King : public Piece {
 protected:
@@ -196,7 +296,54 @@ public:
     // This method will have piece-specific logic for checking valid moves
     // It may also call the generic Piece::validMove for common logic
     int validMove(Position start, Position end,
-        const Board& board) const override { return SUCCESS; }
+        const Board& board) const override {
+        Prompts* prompt = new Prompts();
+        Piece* startpiece = board.getPiece(start);
+        Piece* endpiece = board.getPiece(end);
+        if(startpiece->owner() == endpiece->owner()){
+          prompt->blocked();
+          return -1;
+        }
+	//VERTICAL MOVING
+	else if(startpiece->owner() != endpiece->owner()){
+	  if((end.x - start.x) == 0){
+	    if((end.y - start.y) == 1){
+	      return SUCCESS;
+	    }
+	    else if((start.y - end.y) == 1){
+	      return SUCCESS;
+	    }
+	  }
+	  //HORIZONTAL MOVING
+	  else if((end.y - start.y) == 0){
+	    if((end.x - start.x) == 1){
+	      return SUCCESS;
+	    }
+	    else if((start.x - end.x) == 1){
+	      return SUCCESS;
+	    }
+	  }
+	  //DIAGONAL MOVING TOP CORNERS
+	  else if((end.y - start.y) == 1){
+	    if((end.x - start.x) == 1){
+	      return SUCCESS;
+	    }
+	    else if((start.x - end.x) == 1){
+	      return SUCCESS;
+	    }
+	  }
+	  //DIAGONAL MOVING BOTTOM CORNERS
+	  else if((start.y - end.y) == 1){
+	    if((end.x - start.x) == 1){
+              return SUCCESS;
+            }
+	    else if((start.x - end.x) == 1){
+	      return SUCCESS;
+	    }
+	  }
+	}
+        return -1;
+    }
 };
 
 class ChessGame : public Board {
