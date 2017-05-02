@@ -374,6 +374,13 @@ public:
     virtual void run();
     //print the board
     virtual void printBoard();
+    //Returns true if the person whose turn it is, is in check.
+    virtual int inCheck();
+    //returns true of the player is moving themself into check.
+    virtual int moveToCheck(Position start, Position end);
+    //method to load a chess game
+    virtual void loadGame();
+
 }; 
 
 #endif
