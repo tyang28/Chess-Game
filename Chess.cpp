@@ -9,6 +9,7 @@
 #include "Chess.h"
 #include "Prompts.h"
 
+
 //Loads a chess game from a given file.
 void ChessGame::loadGame() {
 	std::ifstream fp;
@@ -48,7 +49,10 @@ void ChessGame::loadGame() {
 //Returns true if the person whose turn it is, is in check.
 int ChessGame::inCheck() {
 
+	puts("\n");
 	printBoard();
+puts("\n");
+
 	int turn = playerTurn();
 	Position king;
 	for (int i = 7; i > -1; --i) {
@@ -65,6 +69,7 @@ int ChessGame::inCheck() {
 		  Position current = Position(j,i);
 		  if(getPiece(current)->owner() != playerTurn()) {
 	 	     if(getPiece(Position(j,i))->validMove(current ,king, *this) == 1) {
+			std::cout << j << i << std::endl;
 			 return 1;
 		     }
 		  }
@@ -96,7 +101,6 @@ int ChessGame::moveToCheck(Position start, Position end) {
 // Make a move on the board. Return an int, with < 0 being failure
 int ChessGame::makeMove(Position start, Position end) {
     int retCode = 0;
-    Prompts prompt = Prompts();
     Piece* startpiece = getPiece(start);
     if((startpiece->validMove(start, end, *this)) >= 0){
 	if(moveToCheck(start, end)) {
@@ -104,15 +108,12 @@ int ChessGame::makeMove(Position start, Position end) {
 	} else {
            m_pieces[index(end)] = startpiece;
            m_pieces[index(start)] = newPiece(0, SPACE);
-	   if(startpiece->owner() != getPiece(end)->owner()){
-	     prompt.capture(startpiece->owner());
-	     
-	   }
            retCode = 0;
 	}
 
      }  else {
-        prompt.illegalMove();
+        Prompts* prompt = new Prompts();
+        prompt->illegalMove();
         retCode = -1;
 
       }
@@ -145,27 +146,28 @@ void ChessGame::run() {
     std::string move;
     std::getline (std::cin, move);
     while(1) {
-	//if(playerTurn() == 0) {
 	    prompt.playerPrompt(playerTurn(), m_turn);
             
 	    std::getline (std::cin, move);
 	    Position start = Position((move.at(0) - 97), (move.at(1) - '1'));
 	    Position end = Position((move.at(3) - 97), (move.at(4) - '1'));
 	    if(validPosition(start) && validPosition(end)) {
-
-	    	if( makeMove(start, end) >= 0) {
-		     m_turn++;
-		     if(inCheck()) {
-			prompt.check(static_cast<Player>((m_turn % 2)));
-		     }
+		if(getPiece(start)->owner() != playerTurn()) {
+			prompt.noPiece();
+		} else {
+	    	    if( makeMove(start, end) >= 0) {
+		    	 m_turn++;
+		     	 if(inCheck()) {
+			     prompt.check(static_cast<Player>((m_turn % 2)));
+		         }
 		     
 		     
- 	        }
+ 	            }
+		}
 	    } else {
    		prompt.outOfBounds();
 	    }
 		
-	//}
 	  printBoard();
 	   //break;
      }
