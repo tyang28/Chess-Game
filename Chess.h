@@ -31,6 +31,7 @@ enum status {
     GAME_OVER
 };
 
+
 // Possible pieces
 enum PieceEnum {
     SPACE_ENUM = 0,
