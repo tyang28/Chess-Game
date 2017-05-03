@@ -45,6 +45,11 @@ class Space : public Piece {
 protected:
   friend PieceFactory<Space>;
   Space(Player owner, int id) : Piece(owner, id) {}
+public:
+  int validMove(Position start, Position end,
+        const Board& board) const override {
+    return -1;
+  }
 };
 class Pawn : public Piece {
 protected:
