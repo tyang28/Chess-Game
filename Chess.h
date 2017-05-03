@@ -153,7 +153,7 @@ public:
 		  return -1;
 	        }
 	      }
-	      return SUCCESS;//check
+	      return SUCCESS;
 	    }
 	    if(start.y > end.y){
 	      for(;b > end.y; --b){
@@ -163,7 +163,7 @@ public:
 		  return -1;
 		}
 	      }
-	      return SUCCESS; //Check
+	      return SUCCESS; 
 	    }
      	  }
 	  if((start.y == end.y)&&(end.x - start.x) < 8){
@@ -258,15 +258,53 @@ public:
           return -1;
         }
 	else if(startpiece->owner() != endpiece->owner()){
-	  for(unsigned int i = start.x + 1; i < end.x;i++){
-	    Piece* betweenpiece = board.getPiece(Position(i, i));
-	    if(betweenpiece->owner() != 2){
-	      return -1;
+	  //TOP RIGHT DIAGONALS
+	  for(unsigned int i = start.x + 1; i < end.x; ++i){
+	    for(unsigned int j = start.y + 1; j < end.y; ++j){	      
+	      Piece* betweenpiece = board.getPiece(Position(i, j));
+	      if(betweenpiece->owner() != 2){
+		prompt->blocked();
+	        return -1;
+	      }
 	    }
 	  }
+	  return SUCCESS;
+	  //TOP LEFT DIAGONALS
+	  for(unsigned int i = start.x - 1; i < end.x; --i){
+            for(unsigned int j = start.y + 1; j < end.y; ++j){
+              Piece* betweenpiece = board.getPiece(Position(i, j));
+              if(betweenpiece->owner() != 2){
+                prompt->blocked();
+                return -1;
+              }
+            }
+          }
+          return SUCCESS;
+	  //BOTTOM RIGHT DIAGONALS
+	  for(unsigned int i = start.x + 1; i < end.x; ++i){
+            for(unsigned int j = start.y - 1; j < end.y; --j){
+              Piece* betweenpiece = board.getPiece(Position(i, j));
+              if(betweenpiece->owner() != 2){
+                prompt->blocked();
+                return -1;
+              }
+            }
+          }
+          return SUCCESS;
+	  //BOTTOM LEFT DIAGONALS
+	  for(unsigned int i = start.x - 1; i < end.x; --i){
+            for(unsigned int j = start.y - 1; j < end.y; --j){
+              Piece* betweenpiece = board.getPiece(Position(i, j));
+              if(betweenpiece->owner() != 2){
+                prompt->blocked();
+                return -1;
+              }
+            }
+          }
+          return SUCCESS;
 	}
 
-        return SUCCESS;
+        return -1;
     }
 };
 class Queen : public Piece {
@@ -281,10 +319,104 @@ public:
         Prompts* prompt = new Prompts();
         Piece* startpiece = board.getPiece(start);
         Piece* endpiece = board.getPiece(end);
+        unsigned int a = start.y + 1;
+        unsigned int b = start.y - 1;
+        unsigned int c = start.x + 1;
+        unsigned int d = start.x - 1;
         if(startpiece->owner() == endpiece->owner()){
           prompt->blocked();
           return -1;
-        }                          
+        }
+        else if(startpiece->owner() != endpiece->owner()){
+          if((start.x == end.x)&&(end.y - start.y) < 8){
+            if(end.y > start.y){
+              for(;a < end.y; ++a){
+                Piece* betweenpiece = board.getPiece(Position(start.x,a));
+                if(betweenpiece->owner() != 2){
+                  prompt->blocked();
+                  return -1;
+                }
+              }
+              return SUCCESS;
+            }
+            if(start.y > end.y){
+              for(;b > end.y; --b){
+                Piece* betweenpiece = board.getPiece(Position(start.x,b));
+                if(betweenpiece->owner() != 2){
+                  prompt->blocked();
+                  return -1;
+                }
+              }
+              return SUCCESS;
+            }
+          }
+          if((start.y == end.y)&&(end.x - start.x) < 8){
+            if(end.x > start.x){
+              for(;c < end.x; ++c){
+                Piece* betweenpiece = board.getPiece(Position(c, start.y));
+                if(betweenpiece->owner() != 2){
+                  prompt->blocked();
+                  return -1;
+                }
+              }
+              return SUCCESS;
+            }
+            if(start.x > start.y){
+              for(;d > end.x; --d){
+                Piece* betweenpiece = board.getPiece(Position(d, start.y));
+                if(betweenpiece->owner() != 2){
+                  prompt->blocked();
+                  return -1;
+                }
+              }
+              return SUCCESS;
+            }
+          }
+	  //TOP RIGHT DIAGONALS                                                                                                                                                                          
+          for(unsigned int i = start.x + 1; i < end.x; ++i){
+            for(unsigned int j = start.y + 1; j < end.y; ++j){
+              Piece* betweenpiece = board.getPiece(Position(i, j));
+              if(betweenpiece->owner() != 2){
+                prompt->blocked();
+                return -1;
+              }
+            }
+          }
+          return SUCCESS;
+          //TOP LEFT DIAGONALS                                                                                                                                                                            
+          for(unsigned int i = start.x - 1; i < end.x; --i){
+            for(unsigned int j = start.y + 1; j < end.y; ++j){
+              Piece* betweenpiece = board.getPiece(Position(i, j));
+              if(betweenpiece->owner() != 2){
+                prompt->blocked();
+                return -1;
+              }
+            }
+          }
+          return SUCCESS;
+          //BOTTOM RIGHT DIAGONALS                                                                                                                                                                       
+          for(unsigned int i = start.x + 1; i < end.x; ++i){
+            for(unsigned int j = start.y - 1; j < end.y; --j){
+              Piece* betweenpiece = board.getPiece(Position(i, j));
+              if(betweenpiece->owner() != 2){
+                prompt->blocked();
+                return -1;
+              }
+            }
+          }
+          return SUCCESS;
+          //BOTTOM LEFT DIAGONALS
+	  for(unsigned int i = start.x - 1; i < end.x; --i){
+            for(unsigned int j = start.y - 1; j < end.y; --j){
+              Piece* betweenpiece = board.getPiece(Position(i, j));
+              if(betweenpiece->owner() != 2){
+                prompt->blocked();
+                return -1;
+              }
+            }
+          }
+          return SUCCESS;
+        }                        
         return -1;
     }
 };
