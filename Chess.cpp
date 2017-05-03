@@ -9,7 +9,6 @@
 #include "Chess.h"
 #include "Prompts.h"
 
-
 //Loads a chess game from a given file.
 void ChessGame::loadGame() {
 	std::ifstream fp;
@@ -49,7 +48,6 @@ void ChessGame::loadGame() {
 //Returns true if the person whose turn it is, is in check.
 int ChessGame::inCheck() {
 
-	puts("\n");
 	printBoard();
 	int turn = playerTurn();
 	Position king;
@@ -98,6 +96,7 @@ int ChessGame::moveToCheck(Position start, Position end) {
 // Make a move on the board. Return an int, with < 0 being failure
 int ChessGame::makeMove(Position start, Position end) {
     int retCode = 0;
+    Prompts prompt = Prompts();
     Piece* startpiece = getPiece(start);
     if((startpiece->validMove(start, end, *this)) >= 0){
 	if(moveToCheck(start, end)) {
@@ -105,12 +104,15 @@ int ChessGame::makeMove(Position start, Position end) {
 	} else {
            m_pieces[index(end)] = startpiece;
            m_pieces[index(start)] = newPiece(0, SPACE);
+	   if(startpiece->owner() != getPiece(end)->owner()){
+	     prompt.capture(startpiece->owner());
+	     
+	   }
            retCode = 0;
 	}
 
      }  else {
-        Prompts* prompt = new Prompts();
-        prompt->illegalMove();
+        prompt.illegalMove();
         retCode = -1;
 
       }
