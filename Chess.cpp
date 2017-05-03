@@ -4,31 +4,115 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string>
+#include <fstream>
 #include "Game.h"
 #include "Chess.h"
 #include "Prompts.h"
 
+
+//Loads a chess game from a given file.
+void ChessGame::loadGame() {
+	std::ifstream fp;
+	std::string fileName;
+	std::cin >> fileName;
+	std::cout << fileName << std::endl;
+	fp.open(fileName);
+	std::string line;
+	std::getline (fp, line);
+	std::getline (fp, line);
+	m_turn = std::stoi(line);
+	int id;
+	int row;
+	int col;
+	int owner;
+	while(std::getline (fp, line)) {
+	    if(line.length() > 3) {
+		owner = line.at(0) - '0';
+		row = line.at(2) - 97;
+		col = line.at(3) - '1';
+		id = line.at(5) - 47;
+		initPiece(id, (Player)owner, Position(row, col));
+
+	    }
+	}
+	for (int i = 7; i > -1; --i) {
+     	   for(size_t j = 0; j < 8; ++j){
+		if(!getPiece(Position(i,j))) {
+		    m_pieces[index(Position(i,j))] = newPiece(0, SPACE);
+		}
+	   }
+	}
+	printBoard();
+}
+
+
+//Returns true if the person whose turn it is, is in check.
+int ChessGame::inCheck() {
+
+	puts("\n");
+	printBoard();
+	int turn = playerTurn();
+	Position king;
+	for (int i = 7; i > -1; --i) {
+     	   for(size_t j = 0; j < 8; ++j){
+	 	  if(getPiece(Position(j,i))->owner() == turn && 
+			(getPiece(Position(j,i))->id() == 6)) {
+			king = Position(j,i);
+			break;
+		  }
+	   }
+	}
+	for (int i = 7; i > -1; --i) {
+     	   for(size_t j = 0; j < 8; ++j){
+		  Position current = Position(j,i);
+		  if(getPiece(current)->owner() != playerTurn()) {
+	 	     if(getPiece(Position(j,i))->validMove(current ,king, *this) == 1) {
+			 return 1;
+		     }
+		  }
+	   }
+	}
+	
+	return 0;
+
+}
+
+//returns true of the player is moving themself into check.
+int ChessGame::moveToCheck(Position start, Position end) {
+	Prompts prompt = Prompts();
+	Piece* orgEnd = m_pieces[index(end)];
+	m_pieces[index(end)] = getPiece(start);
+        m_pieces[index(start)] = newPiece(0, SPACE);
+	if(inCheck()) {
+		prompt.cantExposeCheck();
+		m_pieces[index(start)] = m_pieces[index(end)];
+		m_pieces[index(end)] = orgEnd;
+		return 1;
+	}
+	m_pieces[index(start)] = m_pieces[index(end)];
+	m_pieces[index(end)] = orgEnd;
+	return 0;
+
+}
+
 // Make a move on the board. Return an int, with < 0 being failure
 int ChessGame::makeMove(Position start, Position end) {
-    // Possibly implement chess-specific move logic here
-    //
-    // We call Board's makeMove to handle any general move logic
-    // Feel free to use this or change it as you see fit
-    int retCode = Board::makeMove(start, end);
-    const ChessGame board = *this;
+    int retCode = 0;
     Piece* startpiece = getPiece(start);
-    std::cout << start.x << start.y << " " << end.x << end.y << std::endl;
-    if((startpiece->validMove(start, end, board)) >= 0){
- 
-      m_pieces[index(end)] = startpiece;
-      m_pieces[index(start)] = newPiece(0, SPACE);
-      puts("did run");
-      retCode = 0;
-     }
-    else{
-      Prompts* prompt = new Prompts();
-      prompt->illegalMove();
-      retCode = -1;
+    if((startpiece->validMove(start, end, *this)) >= 0){
+	if(moveToCheck(start, end)) {
+		return -1;
+	} else {
+           m_pieces[index(end)] = startpiece;
+           m_pieces[index(start)] = newPiece(0, SPACE);
+           retCode = 0;
+	}
+
+     }  else {
+        Prompts* prompt = new Prompts();
+        prompt->illegalMove();
+        retCode = -1;
+
       }
     return retCode;
 }
@@ -55,33 +139,37 @@ void ChessGame::setupBoard() {
 }
 void ChessGame::run() {
     
-    Prompts* prompt = new Prompts();
+    Prompts prompt = Prompts();
     std::string move;
-
+    std::getline (std::cin, move);
     while(1) {
-	if(playerTurn() == 0) {
-	    prompt->playerPrompt(playerTurn(), m_turn);
-            std::getline (std::cin, move);
+	//if(playerTurn() == 0) {
+	    prompt.playerPrompt(playerTurn(), m_turn);
+            
 	    std::getline (std::cin, move);
- 	    int startRow = move.at(0) - 97;
-	    int endRow = move.at(3) - 97;
-	    int startColumn = move.at(1) - '1';
-	    int endColumn = move.at(4) - '1';
-	    std::cout << startRow << "  " << endRow << std::endl;
-	    Position start = Position(startRow, startColumn);
-	    Position end = Position(endRow, endColumn);
+	    Position start = Position((move.at(0) - 97), (move.at(1) - '1'));
+	    Position end = Position((move.at(3) - 97), (move.at(4) - '1'));
+	    if(validPosition(start) && validPosition(end)) {
 
-	    std::cout << startColumn << "  " << endColumn << std::endl;
-	    if( makeMove(start, end) >= 0) {
-		m_turn++;
- 	    }
+	    	if( makeMove(start, end) >= 0) {
+		     m_turn++;
+		     if(inCheck()) {
+			prompt.check(static_cast<Player>((m_turn % 2)));
+		     }
+		     
+		     
+ 	        }
+	    } else {
+   		prompt.outOfBounds();
+	    }
 		
-	}
-	   break;
+	//}
+	  printBoard();
+	   //break;
      }
     
     
-    printBoard();
+    
 }
 void ChessGame::printBoard(){
     for (int i = 7; i > -1; --i) {
@@ -103,6 +191,8 @@ int main() {
 	scanf(" %d", &input);
         if (input == 2) {
 	    prompt->loadGame();
+	    chess.loadGame();
+	    chess.run();
 	    break;
 	    //Add loading a game
         } else if( input != 1) {
