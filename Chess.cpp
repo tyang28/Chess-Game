@@ -269,6 +269,7 @@ void ChessGame::run() {
 				} else if (inCheck()) { 
 					if (stalemate()) {
 	  			     		prompt.checkMate(static_cast<Player>((m_turn % 2)));
+						prompt.win(static_cast<Player>((m_turn % 2)), (m_turn - 1));
 				    		 return;
 					}
 				}
@@ -316,6 +317,7 @@ int main() {
 	    prompt.loadGame();
 	    chess.loadGame();
 	    chess.run();
+	    prompt.gameOver();
 	    break;
         } else if( input != 1) {
 	    prompt.menu();
@@ -327,5 +329,6 @@ int main() {
 	chess.createBoard();
         chess.setupBoard();
 	chess.run();
+	prompt.gameOver();
     }
 }
