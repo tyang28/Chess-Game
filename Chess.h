@@ -550,6 +550,9 @@ public:
     //method to load a chess game
     virtual void loadGame();
 
+    virtual void saveGame();
+
+    virtual int stalemate();
 }; 
 
 #endif
