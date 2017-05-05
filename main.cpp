@@ -30,7 +30,6 @@ int main() {
         }
     }
     if (input == 1) {
-        chess.createBoard();
         chess.setupBoard();
         chess.run();
         prompt.gameOver();
