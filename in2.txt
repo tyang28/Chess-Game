@@ -1,0 +1,3 @@
+2
+checkmate.txt
+c1 c8

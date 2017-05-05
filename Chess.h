@@ -42,6 +42,18 @@ enum PieceEnum {
     QUEEN_ENUM = 4,
     KING_ENUM = 5
 };
+class MysteryPiece : public Piece {
+protected:
+    friend PieceFactory<MysteryPiece>;
+    MysteryPiece(Player owner, int id) : Piece(owner, id) {}
+public:
+    // This method will have piece-specific logic for checking valid moves
+    // It may also call the generic Piece::validMove for common logic
+    int validMove(Position, Position,
+        const Board&) const override {
+        return SUCCESS;
+    }
+};
 
 class Pawn : public Piece {
 protected:
@@ -513,6 +525,7 @@ public:
         addFactory(new PieceFactory<Bishop>(BISHOP_ENUM));
         addFactory(new PieceFactory<Queen>(QUEEN_ENUM));
         addFactory(new PieceFactory<King>(KING_ENUM));
+	addFactory(new PieceFactory<MysteryPiece>(10));
     }
     
     // Setup the chess board with its initial pieces

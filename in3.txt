@@ -1,0 +1,9 @@
+1
+a2 a4
+board
+a7 a6
+board
+b2 b3
+forfeit
+
+

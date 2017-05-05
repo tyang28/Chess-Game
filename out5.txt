@@ -1,0 +1,13 @@
+1. Start a new game
+2. Load a saved game
+Enter a file to load from:
+White turn 3:
+White captures a piece.
+Black turn 4:
+White turn 5:
+Error: blocked by another piece.
+White turn 5:
+Black turn 6:
+White turn 7:
+Black turn 8:
+Game over. Goodbye!

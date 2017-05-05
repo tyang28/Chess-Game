@@ -1,0 +1,20 @@
+TEAM
+James Oncea joncea1
+Teng-Ju Yang tyang28
+
+DESIGN
+The main starts then gives the user to load a file or start new.
+If they load it runs a load file function that sets the board and turn.
+if the start new this creates a starting chess board.
+Then the program runs an infinte loop going from turn to turn until something happens
+to break the loop like a quite checkmate etc. 
+When a player inputs a move the function calls a make move fuction that then calls the 
+valid move fuction for the peice it trying to move if that works it makes sure that the peice
+isnt moving into check or other no peice specific reasons for that peice to be unablr to move
+after the move the board to checks to make sure that there is no checkmate or stalemate.
+This happens till run function kicks out and the program ends.
+
+COMPLETENESS
+We are unaware of any incomplete functionality other than the 
+optional castling function. The code fails if a user inputs an invalid file 
+name which we couldn't find in the instructions if we had to check that.

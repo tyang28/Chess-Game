@@ -192,7 +192,7 @@ int ChessGame::makeMove(Position start, Position end) {
 
     if(getPiece(end) != nullptr && getPiece(end)->id() == 0 && ((getPiece(end)->owner() == 0 && end.y == 7)
 	|| (getPiece(end)->owner() == 1 && end.y == 0)) ) {
-	m_pieces[index(end)] = newPiece(5, playerTurn());
+	m_pieces[index(end)] = newPiece(4, playerTurn());
     }
 
     return retCode;
@@ -221,9 +221,10 @@ void ChessGame::run() {
     while(1) {
 	    prompt.playerPrompt(playerTurn(), m_turn);
             std::getline (std::cin, move);
-	    std::transform(move.begin(), move.end(), move.begin(), ::tolower);
-
-	    if(move.compare("save") == 0 ) {
+	    if(move.length() > 0) {
+	       std::transform(move.begin(), move.end(), move.begin(), ::tolower);
+	    }
+	    if(move.length() > 0 && move.compare("save") == 0 ) {
 		saveGame();
 		prompt.playerPrompt(playerTurn(), m_turn);
                 std::getline (std::cin, move);
@@ -232,7 +233,7 @@ void ChessGame::run() {
 		
 	    }
 
-	    if(move.compare("board") == 0) {
+	    if(move.length() > 0 && move.compare("board") == 0) {
 		board = !(board);
 		printBoard();
 		prompt.playerPrompt(playerTurn(), m_turn);
@@ -240,16 +241,16 @@ void ChessGame::run() {
 		std::transform(move.begin(), move.end(), move.begin(), ::tolower);
 	    }
 
-	    if(move.compare("forfeit") == 0) {
+	    if(move.length() > 0 && move.compare("forfeit") == 0) {
 		prompt.win(static_cast<Player>((m_turn % 2)), (m_turn - 1));
 		return;
 
 	    }
-	    if(move.compare("q") == 0) {
+	    if(move.length() > 0 && move.compare("q") == 0) {
 		return;
 	    }
-
-	    if(move.at(0) > 96 && 48 < move.at(1) && move.at(1) < 96 && move.at(2) == ' ' 
+	
+	    if(move.length() > 0 && move.at(0) > 96 && 48 < move.at(1) && move.at(1) < 96 && move.at(2) == ' ' 
 		&& move.at(3) > 96 && move.at(4) > 48 && move.at(4) < 96 && move.length() == 5) {
 	    	Position start = Position((move.at(0) - 97), (move.at(1) - '1'));
 	    	Position end = Position((move.at(3) - 97), (move.at(4) - '1'));
@@ -277,11 +278,11 @@ void ChessGame::run() {
 		     
 		     
  	            	}
-			}
+		 }
 	    	} else {
    			prompt.outOfBounds();
 	    	}
-	
+		
 	    } else {
 		prompt.parseError();
 	    }
