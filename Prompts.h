@@ -1,4 +1,3 @@
-
 #ifndef PROMPTS_H
 #define PROMPTS_H
 
@@ -96,7 +95,7 @@ public:
     }
 
     static void gameOver() {
-        std::cout << "Game over. Goodbye!";
+        std::cout << "Game over. Goodbye!\n";
     }
 
 };
