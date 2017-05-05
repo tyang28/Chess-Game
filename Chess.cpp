@@ -192,7 +192,7 @@ int ChessGame::makeMove(Position start, Position end) {
 
     if(getPiece(end) != nullptr && getPiece(end)->id() == 0 && ((getPiece(end)->owner() == 0 && end.y == 7)
 	|| (getPiece(end)->owner() == 1 && end.y == 0)) ) {
-	m_pieces[index(end)] = newPiece(5, playerTurn());
+	m_pieces[index(end)] = newPiece(4, playerTurn());
     }
 
     return retCode;
