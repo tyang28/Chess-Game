@@ -34,32 +34,14 @@ enum status {
 
 // Possible pieces
 enum PieceEnum {
-    SPACE_ENUM = 0,
-    PAWN_ENUM = 1,
-    ROOK_ENUM = 2,
-    KNIGHT_ENUM = 3,
-    BISHOP_ENUM = 4,
-    QUEEN_ENUM = 5,
-    KING_ENUM = 6 
+    PAWN_ENUM = 0,
+    ROOK_ENUM = 1,
+    KNIGHT_ENUM = 2,
+    BISHOP_ENUM = 3,
+    QUEEN_ENUM = 4,
+    KING_ENUM = 5
 };
-class Space : public Piece {
-protected:
-  friend PieceFactory<Space>;
-  Space(Player owner, int id) : Piece(owner, id) {}
-public:
-  int validMove(Position start, Position end,
-        const Board& board) const override {
-    ++start.x;
-    --start.x;
-    ++end.x;
-    --end.x;
-    Piece* startpiece = board.getPiece(start);
-    startpiece = startpiece;
-    Piece* endpiece = board.getPiece(end);
-    endpiece = endpiece;
-    return -1;
-  }
-};
+
 class Pawn : public Piece {
 protected:
     friend PieceFactory<Pawn>;
@@ -71,10 +53,12 @@ public:
         const Board& board) const override {
         Piece* startpiece = board.getPiece(start);
 	Piece* endpiece = board.getPiece(end);
-        if(startpiece->owner() == endpiece->owner()){
+
+        if(endpiece != nullptr && startpiece->owner() == endpiece->owner()){
 	  return -2;
         }
-	if((startpiece->owner() == 0) && (endpiece->owner() == 1)){
+
+	if(endpiece != nullptr && (startpiece->owner() == 0) && (endpiece->owner() == 1)){
 	  if((end.x == start.x + 1) && (end.y == start.y + 1)){
 	    return SUCCESS; 
 	  }
@@ -85,7 +69,8 @@ public:
 	    return -1;
 	  }
 	}
-	if((startpiece->owner() == 1) && (endpiece->owner() == 0)){
+
+	if(endpiece != nullptr &&(startpiece->owner() == 1) && (endpiece->owner() == 0)){
 	  if((end.x == start.x + 1) && (end.y == start.y - 1)){
             return SUCCESS;
           }
@@ -96,7 +81,8 @@ public:
             return -1;
           }
 	}
-	if((startpiece->owner() == 0) && (endpiece->owner() == 2)){
+
+	if((startpiece->owner() == 0) && (endpiece == nullptr)){
 	  //WHITE SINGLE SPACE
 	  if(startpiece->owner() == 0){
             if(((start.x - end.x) == 0)&& ((end.y - start.y) == 1)){
@@ -110,8 +96,9 @@ public:
             }
           }
 	}
+
 	//BLACK DOUBLE SPACE
-	if((startpiece->owner() == 1) && (endpiece->owner() == 2)){
+	if((startpiece->owner() == 1) && (endpiece == nullptr)){
 	  //BLACK SINGLE SPACE                                                                                                                                                                           
           if(startpiece->owner() == 1){
             if(((start.x - end.x) == 0)&& ((start.y - end.y) == 1)){
@@ -145,15 +132,15 @@ public:
 	unsigned int b = start.y - 1;
 	unsigned int c = start.x + 1;
 	unsigned int d = start.x - 1;
-        if(startpiece->owner() == endpiece->owner()){
+        if(endpiece != nullptr && startpiece->owner() == endpiece->owner()){
 	  return -2;
         }
-        else if(startpiece->owner() != endpiece->owner()){
+        else if(endpiece == nullptr || startpiece->owner() != endpiece->owner()){
           if((start.x == end.x)&&((end.y - start.y) < 8)){
 	    if(end.y > start.y){
 	      for(;a < end.y; ++a){
 	        Piece* betweenpiece = board.getPiece(Position(start.x,a));
-	        if(betweenpiece->owner() != 2){
+	        if(betweenpiece != nullptr){
 		  return -2;
 	        }
 	      }
@@ -165,7 +152,7 @@ public:
             if(start.y > end.y){
               for(;b > end.y; --b){
                 Piece* betweenpiece = board.getPiece(Position(start.x,b));
-                if(betweenpiece->owner() != 2){
+                if(betweenpiece != nullptr){
                   return -2;
                 }
               }
@@ -177,7 +164,7 @@ public:
 	    if(end.x > start.x){
 	      for(;c < end.x; ++c){
 		Piece* betweenpiece = board.getPiece(Position(c, start.y));
-		if(betweenpiece->owner() != 2){
+		if(betweenpiece != nullptr){
 		  return -2;
 		}
 	      }
@@ -189,7 +176,7 @@ public:
             if(start.x > end.x){
               for(;d > end.x; --d){
                 Piece* betweenpiece = board.getPiece(Position(d, start.y));
-                if(betweenpiece->owner() != 2){
+                if(betweenpiece != nullptr){
                   return -2;
                 }
               }
@@ -211,10 +198,10 @@ public:
         const Board& board) const override {
         Piece* startpiece = board.getPiece(start);
         Piece* endpiece = board.getPiece(end);
-        if(startpiece->owner() == endpiece->owner()){
+        if(endpiece != nullptr && startpiece->owner() == endpiece->owner()){
           return -2;
         }
-	else if(startpiece->owner() != endpiece->owner()){
+	else if(endpiece == nullptr || startpiece->owner() != endpiece->owner()){
 	  if(end.y > start.y){
 	    if((end.y == (start.y + 2))&&(end.x == (start.x + 1))){
 	      return SUCCESS;
@@ -258,10 +245,10 @@ public:
         const Board& board) const override {
         Piece* startpiece = board.getPiece(start);
         Piece* endpiece = board.getPiece(end);
-        if(startpiece->owner() == endpiece->owner()){
+        if( endpiece != nullptr && startpiece->owner() == endpiece->owner()){
           return -2;
         }
-	else if(startpiece->owner() != endpiece->owner()){
+	else if(endpiece == nullptr || startpiece->owner() != endpiece->owner()){
 	  //TOP RIGHT DIAGONALS
 	  unsigned int xcoord1 = start.x + 1;
 	  unsigned int ycoord1 = start.y + 1;
@@ -271,7 +258,7 @@ public:
 	    if((end.x - start.x) == (end.y - start.y)){
 	      while((end.x > xcoord1)&&(end.y > ycoord1)){
 	        Piece* betweenpiece = board.getPiece(Position(xcoord1, ycoord1));
-	        if(betweenpiece->owner() != 2){
+	        if(betweenpiece  != nullptr){
 	          return -2;
 	        }
 	        ++xcoord1;
@@ -285,7 +272,7 @@ public:
             if((start.x - end.x) == (end.y - start.y)){
               while((end.x < xcoord2)&&(end.y > ycoord1)){
                 Piece* betweenpiece = board.getPiece(Position(xcoord2, ycoord1));
-                if(betweenpiece->owner() != 2){
+                if(betweenpiece != nullptr){
                   return -2;
                 }
                 --xcoord1;
@@ -300,7 +287,7 @@ public:
             if((end.x - start.x) == (start.y - end.y)){
               while((end.x > xcoord1)&&(end.y < ycoord2)){
                 Piece* betweenpiece = board.getPiece(Position(xcoord1, ycoord2));
-                if(betweenpiece->owner() != 2){
+                if(betweenpiece != nullptr){
                   return -2;
                 }
                 ++xcoord1;
@@ -314,7 +301,7 @@ public:
             if((start.x - end.x) == (start.y - end.y)){
               while((end.x < xcoord2)&&(end.y < ycoord2)){
                 Piece* betweenpiece = board.getPiece(Position(xcoord1, ycoord2));
-                if(betweenpiece->owner() != 2){
+                if(betweenpiece != nullptr){
                   return -2;
                 }
                 --xcoord1;
@@ -343,15 +330,15 @@ public:
         unsigned int b = start.y - 1;
         unsigned int c = start.x + 1;
         unsigned int d = start.x - 1;
-        if(startpiece->owner() == endpiece->owner()){
+        if(endpiece != nullptr && startpiece->owner() == endpiece->owner()){
           return -2;
         }
-	else if(startpiece->owner() != endpiece->owner()){
+	else if(endpiece == nullptr || startpiece->owner() != endpiece->owner()){
           if((start.x == end.x)&&((end.y - start.y) < 8)){
             if(end.y > start.y){
               for(;a < end.y; ++a){
                 Piece* betweenpiece = board.getPiece(Position(start.x,a));
-                if(betweenpiece->owner() != 2){
+                if(betweenpiece != nullptr){
                   return -2;
                 }
               }
@@ -363,7 +350,7 @@ public:
             if(start.y > end.y){
               for(;b > end.y; --b){
                 Piece* betweenpiece = board.getPiece(Position(start.x,b));
-                if(betweenpiece->owner() != 2){
+                if(betweenpiece != nullptr){
                   return -2;
                 }
               }
@@ -375,7 +362,7 @@ public:
             if(end.x > start.x){
               for(;c < end.x; ++c){
                 Piece* betweenpiece = board.getPiece(Position(c, start.y));
-                if(betweenpiece->owner() != 2){
+                if(betweenpiece != nullptr){
                   return -2;
                 }
               }
@@ -387,7 +374,7 @@ public:
             if(start.x > end.x){
               for(;d > end.x; --d){
                 Piece* betweenpiece = board.getPiece(Position(d, start.y));
-                if(betweenpiece->owner() != 2){
+                if(betweenpiece != nullptr){
                   return -2;
                 }
               }
@@ -403,7 +390,7 @@ public:
             if((end.x - start.x) == (end.y - start.y)){
               while((end.x > xcoord1)&&(end.y > ycoord1)){
                 Piece* betweenpiece = board.getPiece(Position(xcoord1, ycoord1));
-                if(betweenpiece->owner() != 2){
+                if(betweenpiece != nullptr){
                   return -2;
                 }
                 ++xcoord1;
@@ -417,7 +404,7 @@ public:
             if((start.x - end.x) == (end.y - start.y)){
               while((end.x < xcoord2)&&(end.y > ycoord1)){
                 Piece* betweenpiece = board.getPiece(Position(xcoord2, ycoord1));
-                if(betweenpiece->owner() != 2){
+                if(betweenpiece != nullptr){
                   return -2;
                 }
                 --xcoord1;
@@ -432,7 +419,7 @@ public:
             if((end.x - start.x) == (start.y - end.y)){
               while((end.x > xcoord1)&&(end.y < ycoord2)){
                 Piece* betweenpiece = board.getPiece(Position(xcoord1, ycoord2));
-                if(betweenpiece->owner() != 2){
+                if(betweenpiece != nullptr){
                   return -2;
                 }
                 ++xcoord1;
@@ -446,7 +433,7 @@ public:
             if((start.x - end.x) == (start.y - end.y)){
               while((end.x < xcoord2)&&(end.y < ycoord2)){
                 Piece* betweenpiece = board.getPiece(Position(xcoord1, ycoord2));
-                if(betweenpiece->owner() != 2){
+                if(betweenpiece != nullptr){
                   return -2;
                 }
                 --xcoord1;
@@ -470,11 +457,11 @@ public:
         const Board& board) const override {
         Piece* startpiece = board.getPiece(start);
         Piece* endpiece = board.getPiece(end);
-        if(startpiece->owner() == endpiece->owner()){
+        if(endpiece != nullptr && startpiece->owner() == endpiece->owner()){
           return -2;
         }
 	//VERTICAL MOVING
-	else if(startpiece->owner() != endpiece->owner()){
+	else if(endpiece == nullptr || startpiece->owner() != endpiece->owner()){
 	  if((end.x - start.x) == 0){
 	    if((end.y - start.y) == 1){
 	      return SUCCESS;
@@ -519,7 +506,6 @@ class ChessGame : public Board {
 public:
     ChessGame() : Board(8, 8) {
         // Add all factories needed to create Piece subclasses
-        addFactory(new PieceFactory<Space>(SPACE_ENUM));
         addFactory(new PieceFactory<Pawn>(PAWN_ENUM));
         addFactory(new PieceFactory<Rook>(ROOK_ENUM));
         addFactory(new PieceFactory<Knight>(KNIGHT_ENUM));
@@ -527,8 +513,7 @@ public:
         addFactory(new PieceFactory<Queen>(QUEEN_ENUM));
         addFactory(new PieceFactory<King>(KING_ENUM));
     }
-    // Create Board and fill with spaces
-    virtual void createBoard();
+    
     // Setup the chess board with its initial pieces
     virtual void setupBoard();
 

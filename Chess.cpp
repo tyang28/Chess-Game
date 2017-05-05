@@ -29,19 +29,14 @@ void ChessGame::saveGame() {
 	for (int i = 7; i > -1; --i) {
      	   for(size_t j = 0; j < 8; ++j){
 	    	Piece* current = getPiece(Position(j,i));
-		if(current->owner() != 2) {
+		  if(current != nullptr) {
 		    owner = current->owner();
 		    row = i + 1;
 		    col = j + 97;
-		    if(current->id() <= 6) {
-		        id =  current->id() - 1;
-		    } else {
-			id = current->id();
-		    }
+		    id =  current->id();
 
 	            fp << owner << " " << col << row << " " << id << std::endl;
-		    
-		}
+		  } 
 	    }
 	}
 
@@ -69,17 +64,10 @@ void ChessGame::loadGame() {
 		owner = line.at(0) - '0';
 		row = line.at(2) - 97;
 		col = line.at(3) - '1';
-		id = line.at(5) - 47;
+		id = line.at(5) - 48;
 		initPiece(id, (Player)owner, Position(row, col));
 
 	    }
-	}
-	for (int i = 7; i > -1; --i) {
-     	   for(size_t j = 0; j < 8; ++j){
-		if(!getPiece(Position(i,j))) {
-		    m_pieces[index(Position(i,j))] = newPiece(0, SPACE);
-		}
-	   }
 	}
 	fp.close();
 }
@@ -91,21 +79,27 @@ int ChessGame::inCheck() {
 	Position king;
 	for (int i = 7; i > -1; --i) {
      	   for(size_t j = 0; j < 8; ++j){
-	 	  if(getPiece(Position(j,i))->owner() == turn && 
-			(getPiece(Position(j,i))->id() == 6)) {
+		Piece* piece = getPiece(Position(j,i));
+		if(piece != nullptr) {
+	 	  if(piece->owner() == turn && 
+			(piece->id() == 5)) {
 			king = Position(j,i);
 			break;
 		  }
+		}
 	   }
 	}
 	for (int i = 7; i > -1; --i) {
      	   for(size_t j = 0; j < 8; ++j){
-		  Position current = Position(j,i);
-		  if(getPiece(current)->owner() != playerTurn()) {
-	 	     if(getPiece(Position(j,i))->validMove(current ,king, *this) == 1) {
+		Position current = Position(j,i); 
+		Piece* piece = getPiece(Position(j,i));
+		if(piece != nullptr) {
+		  if(piece->owner() != playerTurn()) {
+	 	     if(piece->validMove(current ,king, *this) == 1) {
 			 return 1;
 		     }
 		  }
+		}
 	   }
 	}
 	
@@ -117,7 +111,7 @@ int ChessGame::inCheck() {
 int ChessGame::moveToCheck(Position start, Position end) {
 	Piece* orgEnd = m_pieces[index(end)];
 	m_pieces[index(end)] = getPiece(start);
-        m_pieces[index(start)] = newPiece(0, SPACE);
+        m_pieces[index(start)] = nullptr;
 	if(inCheck()) {
 		free(m_pieces[index(start)]);
 		m_pieces[index(start)] = m_pieces[index(end)];
@@ -136,6 +130,7 @@ int ChessGame::moveToCheck(Position start, Position end) {
 int ChessGame::stalemate() {
 	for (int startrow = 7; startrow > -1; --startrow) {
      	   for(size_t startcol = 0; startcol < 8; ++startcol){
+	    if(getPiece(Position(startcol, startrow)) != nullptr) {
 	     if(getPiece(Position(startcol, startrow))->owner() == playerTurn()) {
 		for (int endrow = 7; endrow > -1; --endrow) {
      	           for(size_t endcol = 0; endcol < 8; ++endcol){
@@ -149,6 +144,7 @@ int ChessGame::stalemate() {
 		   }
 		}
 	     }
+	    }
 	   }
 	}
 	return 1;
@@ -161,11 +157,10 @@ int ChessGame::makeMove(Position start, Position end) {
     Piece* startpiece = getPiece(start);
     Prompts prompt = Prompts();
     if((startpiece->validMove(start, end, *this)) >= 0){
-	
 	if(inCheck()) {
 	   Piece* orgEnd = m_pieces[index(end)];
 	   m_pieces[index(end)] = getPiece(start);
-           m_pieces[index(start)] = newPiece(0, SPACE);
+           m_pieces[index(start)] = nullptr;
 	   if(inCheck()) {
 		prompt.mustHandleCheck();
 		m_pieces[index(start)] = m_pieces[index(end)];
@@ -173,22 +168,18 @@ int ChessGame::makeMove(Position start, Position end) {
 		return -1;
 	   }
 	}
-
 	if(moveToCheck(start, end)) {
 		prompt.cantExposeCheck();
 		return -1;
 	} else {
-
-	   if(getPiece(end)->owner() != 2 ) {
-	       if(getPiece(start)->owner() != getPiece(end)->owner()) {
-	           prompt.capture(playerTurn());
-	       }
-           }
+	   if(getPiece(end) != nullptr && getPiece(start)->owner() != getPiece(end)->owner()) {
+	       prompt.capture(playerTurn());
+	   }
            m_pieces[index(end)] = startpiece;
-           m_pieces[index(start)] = newPiece(0, SPACE);
+           m_pieces[index(start)] = nullptr;
            retCode = 0;
 	}
-	
+
      } else if((startpiece->validMove(start, end, *this)) == -2) {
 	   prompt.blocked();
 	   return -1;
@@ -199,21 +190,14 @@ int ChessGame::makeMove(Position start, Position end) {
 
       }
 
-    if(getPiece(end)->id() == 1 && ((getPiece(end)->owner() == 0 && end.y == 7)
+    if(getPiece(end) != nullptr && getPiece(end)->id() == 0 && ((getPiece(end)->owner() == 0 && end.y == 7)
 	|| (getPiece(end)->owner() == 1 && end.y == 0)) ) {
 	m_pieces[index(end)] = newPiece(5, playerTurn());
     }
 
     return retCode;
 }
-//Create the board and fill with empty spaces
-void ChessGame::createBoard() {
-    for (size_t i = 0; i < 8; ++i) {
-      for(size_t j = 2; j < 6; ++j){
-        initPiece(SPACE_ENUM, SPACE, Position(i, j));  
-      }
-    }  
-}  
+  
 // Setup the chess board with its initial pieces
 void ChessGame::setupBoard() {
     std::vector<int> pieces {
@@ -250,6 +234,7 @@ void ChessGame::run() {
 
 	    if(move.compare("board") == 0) {
 		board = !(board);
+		printBoard();
 		prompt.playerPrompt(playerTurn(), m_turn);
 		std::getline (std::cin, move);
 		std::transform(move.begin(), move.end(), move.begin(), ::tolower);
@@ -269,7 +254,7 @@ void ChessGame::run() {
 	    	Position start = Position((move.at(0) - 97), (move.at(1) - '1'));
 	    	Position end = Position((move.at(3) - 97), (move.at(4) - '1'));
 	    	if(validPosition(start) && validPosition(end)) {
-			if(getPiece(start)->owner() != playerTurn()) {
+			if(getPiece(start) == nullptr || getPiece(start)->owner() != playerTurn()) {
 				prompt.noPiece();
 			} else {
 	    	    	if( makeMove(start, end) >= 0) {
@@ -309,26 +294,31 @@ void ChessGame::run() {
     
 }
 void ChessGame::printBoard(){
+    int id;
+    int owner;
     std::cout << " -------------------------" << std::endl;
     for (int i = 7; i > -1; --i) {
       std::cout << i+1 << "|";
       for(size_t j = 0; j < 8; ++j){
 	Piece* piece = getPiece(Position(j,i));
-	int id = piece->id();
-	int owner = piece->owner();
+	if(piece == nullptr) {
+	   id = 32;
+	   owner = 32;
+	} else {
+	   id = piece->id() + '0';
+	   owner = piece->owner();
+	}
 	if(owner == 0) {
 	  owner = 'w';
 	} else if (owner == 1) {
 	  owner = 'b';
 	} else {
-	  owner = '0';
+	  owner = ' ';
 	}
-	std::cout << (char)owner << id << "|";
+	std::cout << (char)owner << (char)id << "|";
       }
       std::cout<<std::endl << " ";
-      for(int i = 0; i < 25; i++) {
-	std::cout << '-';
-      }
+      std::cout << "|--|--|--|--|--|--|--|--|";
       std::cout <<std::endl;
     }
     std::cout << "  a  b  c  d  e  f  g  h   " << std::endl;
@@ -354,7 +344,6 @@ int main() {
 	}
     }
     if (input == 1) {
-	chess.createBoard();
         chess.setupBoard();
 	chess.run();
 	prompt.gameOver();
