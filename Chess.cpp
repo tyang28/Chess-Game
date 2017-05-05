@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <algorithm>
 #include "Game.h"
 #include "Chess.h"
 #include "Prompts.h"
@@ -118,10 +119,12 @@ int ChessGame::moveToCheck(Position start, Position end) {
 	m_pieces[index(end)] = getPiece(start);
         m_pieces[index(start)] = newPiece(0, SPACE);
 	if(inCheck()) {
+		free(m_pieces[index(start)]);
 		m_pieces[index(start)] = m_pieces[index(end)];
 		m_pieces[index(end)] = orgEnd;
 		return 1;
 	}
+	free(m_pieces[index(start)]);
 	m_pieces[index(start)] = m_pieces[index(end)];
 	m_pieces[index(end)] = orgEnd;
 	return 0;
@@ -234,23 +237,33 @@ void ChessGame::run() {
     while(1) {
 	    prompt.playerPrompt(playerTurn(), m_turn);
             std::getline (std::cin, move);
+	    std::transform(move.begin(), move.end(), move.begin(), ::tolower);
 
 	    if(move.compare("save") == 0 ) {
 		saveGame();
 		prompt.playerPrompt(playerTurn(), m_turn);
                 std::getline (std::cin, move);
 		std::getline (std::cin, move);
+		std::transform(move.begin(), move.end(), move.begin(), ::tolower);
+		
 	    }
 
 	    if(move.compare("board") == 0) {
 		board = !(board);
 		prompt.playerPrompt(playerTurn(), m_turn);
 		std::getline (std::cin, move);
+		std::transform(move.begin(), move.end(), move.begin(), ::tolower);
 	    }
 
+	    if(move.compare("forfeit") == 0) {
+		prompt.win(static_cast<Player>((m_turn % 2)), (m_turn - 1));
+		return;
+
+	    }
 	    if(move.compare("q") == 0) {
 		return;
 	    }
+
 	    if(move.at(0) > 96 && 48 < move.at(1) && move.at(1) < 96 && move.at(2) == ' ' 
 		&& move.at(3) > 96 && move.at(4) > 48 && move.at(4) < 96 && move.length() == 5) {
 	    	Position start = Position((move.at(0) - 97), (move.at(1) - '1'));
@@ -296,14 +309,29 @@ void ChessGame::run() {
     
 }
 void ChessGame::printBoard(){
+    std::cout << " -------------------------" << std::endl;
     for (int i = 7; i > -1; --i) {
+      std::cout << i+1 << "|";
       for(size_t j = 0; j < 8; ++j){
 	Piece* piece = getPiece(Position(j,i));
 	int id = piece->id();
-	std::cout << id;
+	int owner = piece->owner();
+	if(owner == 0) {
+	  owner = 'w';
+	} else if (owner == 1) {
+	  owner = 'b';
+	} else {
+	  owner = '0';
+	}
+	std::cout << (char)owner << id << "|";
       }
-      std::cout<<std::endl;
+      std::cout<<std::endl << " ";
+      for(int i = 0; i < 25; i++) {
+	std::cout << '-';
+      }
+      std::cout <<std::endl;
     }
+    std::cout << "  a  b  c  d  e  f  g  h   " << std::endl;
 }
 int main() {
     ChessGame chess;
